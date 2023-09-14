@@ -1,4 +1,3 @@
-import org.json.JSONObject;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -6,23 +5,19 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static org.telegram.telegrambots.meta.api.methods.ParseMode.HTML;
 
 public class MyBot extends TelegramLongPollingBot {
-    private static final String OPEN_WEATHER_MAP_API_KEY = ;
-    private static final String OPEN_WEATHER_MAP_API_URL =
-            "http://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric";
 
-    private final String SEND_MESSAGE_ERROR = "Помилка відправки повідомлення: ";
-    private List<String> chatIds = new ArrayList<>();
-    private LocalTime notificationTime = LocalTime.of(12, 20); // задаємо час розсилки повідомлення
+    private final LocalTime notificationTime = LocalTime.of(10, 0); // задаємо час розсилки повідомлення
 
     public static void main(String[] args) throws TelegramApiException {
         MyBot bot = new MyBot();
@@ -43,7 +38,7 @@ public class MyBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return ;
+        return "5958623884:AAGahM1YxcgehMyFGHSPeRperjJCY9BUlHg";
     }
 
     @Override
@@ -51,33 +46,55 @@ public class MyBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             String chatId = update.getMessage().getChatId().toString();
             String messageText = update.getMessage().getText();
+            BotData.saveChatId(update.getMessage().getChatId().toString());
+            SendMessage message = new SendMessage();
+            message.setChatId(chatId);
+            message.setParseMode(HTML);
 
-            if ("/start".equals(messageText)) {
-                chatIds.add(chatId);
-                String reply = "Доброго дня!\nЩодня о 11 я присилатиму Вам плани дітей на день!";
-                SendMessage message = new SendMessage(chatId, reply);
-                try {
-                    execute(message);
-                } catch (Exception e) {
-                    System.err.println(SEND_MESSAGE_ERROR + e.getMessage());
-                }
+            switch (messageText) {
+                case "/start":
+                    message.setText("Вітаннячко!\nЦей ботик щодня о 10 присилатиме\nплани дітей на день!");
+                    break;
+                case "/today":
+                    try {
+                        message.setText(getDayPlanes(LocalDateTime.now().getDayOfWeek())
+                        + Weather.getWeather()
+                        + CurrencyParser.prettyRates());
+                    } catch (IOException e) {
+                        message.setText(getDayPlanes(LocalDateTime.now().getDayOfWeek())
+                        + Weather.getWeather()
+                        + "Не вдалося отримати курси.");
+                    }
+                    break;
+                case "/weather":
+                    message.setText(Weather.getWeather());
+                    break;
+                case "/currency":
+                    try {
+                        message.setText(CurrencyParser.prettyRates());
+                    } catch (IOException e) {
+                        message.setText("Не вдалося отримати круси валют");
+                    }
+                    break;
+                case "/full":
+                    message.setText(
+                            getDayPlanes(DayOfWeek.MONDAY)
+                            + "\n"
+                            + getDayPlanes(DayOfWeek.TUESDAY)
+                            + "\n"
+                            + getDayPlanes(DayOfWeek.WEDNESDAY)
+                            + "\n"
+                            + getDayPlanes(DayOfWeek.THURSDAY)
+                            +"\n"
+                            + getDayPlanes(DayOfWeek.FRIDAY)
+                            +"\n"
+                            + getDayPlanes(DayOfWeek.SATURDAY));
+                    break;
             }
-            if ("/today".equals(messageText)) {
-                SendMessage message = new SendMessage(chatId, getDayPlanes(LocalDateTime.now().getDayOfWeek()));
-                try {
-                    execute(message);
-                } catch (Exception e) {
-                    System.err.println(SEND_MESSAGE_ERROR + e.getMessage());
-                }
-            }
-            if ("/weather".equals(messageText)) {
-                String reply = getWeather();
-                SendMessage message = new SendMessage(chatId, reply);
-                try {
-                    execute(message);
-                } catch (Exception e) {
-                    System.err.println(SEND_MESSAGE_ERROR + e.getMessage());
-                }
+            try {
+                execute(message);
+            } catch (Exception e) {
+                System.out.println("Сталася помилка");
             }
         }
     }
@@ -87,13 +104,19 @@ public class MyBot extends TelegramLongPollingBot {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                chatIds.forEach(chatId -> sendDailyMessage(chatId));
+                List<String> chatIds = BotData.getChatIds();
+                chatIds.forEach(chatId -> {
+                    try {
+                        sendDailyMessage(chatId);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             }
         }, 0, 60 * 1000L); // звіряємо час кожну хвилину
     }
 
-    public void sendDailyMessage(String chatId) {
-        String weather = getWeather();
+    public void sendDailyMessage(String chatId) throws IOException {
         DayOfWeek dayOfWeek = DayOfWeek.from(LocalDateTime.now());
         int localHour = LocalTime.now().getHour();
         int localMinute = LocalTime.now().getMinute();
@@ -101,176 +124,133 @@ public class MyBot extends TelegramLongPollingBot {
         int notificationMinute = notificationTime.getMinute();
 
         if (notificationHour == localHour && notificationMinute == localMinute) {
-            String greetingDay = "Вітаю!\n";
-            SendMessage message = new SendMessage();
+            String iLoveYou = "\nПуська, я тебе люблю! \uD83E\uDEF6";
+            String greetingDay = "Вітаю! \uD83E\uDEF6 \n";
+            if (chatId.equals("5289935625")) {
+                SendMessage message = new SendMessage();
                 message.setChatId(chatId);
-                message.setText(greetingDay + getDayPlanes(dayOfWeek) + weather);
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+                message.setText(greetingDay
+                        + getDayPlanes(dayOfWeek)
+                        + Weather.getWeather()
+                        + CurrencyParser.prettyRates()
+                        + iLoveYou);
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                SendMessage message = new SendMessage();
+                message.setChatId(chatId);
+                message.setText(greetingDay
+                        + getDayPlanes(dayOfWeek)
+                        + Weather.getWeather()
+                        + CurrencyParser.prettyRates());
+                try {
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    private static String getWeather() {
-        try {
-            URL url = new URL(String.format(OPEN_WEATHER_MAP_API_URL, "Rivne", OPEN_WEATHER_MAP_API_KEY));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-
-            reader.close();
-            connection.disconnect();
-
-            JSONObject obj = new JSONObject(response.toString());
-            String description = obj.getJSONArray("weather").getJSONObject(0).getString("description");
-            int temp = obj.getJSONObject("main").getInt("temp_max");
-            int tempFeelsLike = obj.getJSONObject("main").getInt("feels_like");
-            int windSpeed = obj.getJSONObject("wind").getInt("speed");
-            int humidity = obj.getJSONObject("main").getInt("humidity");
-
-            switch (description) {
-                case "clear sky":
-                    description = "чисте небо";
-                    break;
-                case "few clouds":
-                    description = "мінлива хмарність";
-                    break;
-                case "scattered clouds":
-                    description = "розкидані хмари";
-                    break;
-                case "broken clouds":
-                    description = "хмарно з проясненнями";
-                    break;
-                case "overcast clouds":
-                    description = "похмуро";
-                    break;
-                case "shower rain":
-                    description = "зливи";
-                    break;
-                case "rain":
-                    description = "дощ";
-                    break;
-                case "thunderstorm":
-                    description = "гроза";
-                    break;
-                case "snow":
-                    description = "сніг";
-                    break;
-                case "mist":
-                    description = "туман";
-                    break;
-                default:
-                    description = "гарний день!";
-                    break;
-            }
-
-            return String.format("Сьогодні буде %s" +
-                    "\nНайвища температура %s°C" +
-                    "\nЗараз відчувається як %s°C" +
-                    "\nВітер %s метрів/с" +
-                    "\nВологість %s%%",
-                    description, temp, tempFeelsLike, windSpeed, humidity);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "не вдалося отримати прогноз погоди";
-        }
-    }
-    private String getDayPlanes (DayOfWeek dayOfWeek) {
+    private String getDayPlanes(DayOfWeek dayOfWeek) {
         String delim = "----------------------\n";
+        String max = "\uD83D\uDC66\uD83C\uDFFC <b>Макс:</b>\n";
+        String anna = "\uD83D\uDC67\uD83C\uDFFB <b>Анюта:</b>\n";
+        String schoolSixLessons = "🏫 Школа - 14:10\n";
+        String schoolSevenLessons = "🏫 Школа - 15:05\n";
+        String schoolEightLessons = "🏫 Школа - 16:00\n";
+        String eng = "🇬🇧 Англійська - ";
+        String pool = "\uD83C\uDFCA\u200D♂️ Басейн - 17:30-19:45\n";
+        String dances = "\uD83D\uDC83\uD83C\uDFFB Танці - ";
+        String germ = "\uD83C\uDDE9\uD83C\uDDEA Німецька - ";
         String dayPlanes = "";
+
         switch (dayOfWeek) {
             case MONDAY:
                     dayPlanes =
-                            "Плани на Понеділок:\n" +
-                            delim +
-                            "Макс:\n" +
-                            "Школа - 14:10\n" +
-                            "Басейн - 16:00-17:30\n" +
-                            delim +
-                            "Анюта:\n" +
-                            "Школа - 16:00\n" +
-                            "Англійська - 17:00-18:00\n" +
-                            delim;
+                            "<i>Плани на Понеділок:</i>\n" +
+                                    delim +
+                                    max +
+                                    schoolSevenLessons +
+                                    pool +
+                                    delim +
+                                    anna +
+                                    schoolSevenLessons +
+                                    delim;
                 break;
             case TUESDAY:
                     dayPlanes =
-                            "Плани на Вівторок:\n" +
-                            delim +
-                            "Макс:\n" +
-                            "Школа - 14:10\n" +
-                            "Англійська - 14:30-15:30\n" +
-                            delim +
-                            "Басейн - 18:00-19:00\n" +
-                            "Анюта:\n" +
-                            "Школа - 15:05\n" +
-                            "Танці(Текст) - 16:00-17:30\n" +
-                            delim;
+                            "<i>Плани на Вівторок:</i>\n" +
+                                    delim +
+                                    max +
+                                    schoolSevenLessons +
+                                    eng + "16:00-17:00\n" +
+                                    pool +
+                                    delim +
+                                    anna +
+                                    schoolSevenLessons +
+                                    dances + "19:00-20:30\n(Текстильник)\n" +
+                                    delim;
                     break;
             case WEDNESDAY:
                     dayPlanes =
-                            "Плани на Середу:\n" +
+                            "<i>Плани на Середу:</i>\n" +
                             delim +
-                            "Макс:\n" +
-                            "Школа - 15:05\n" +
-                            "Басейн - 18:00-19:30\n" +
+                            max +
+                            schoolSixLessons +
+                            germ + "15:00-16:00\n" +
+                            pool +
                             delim +
-                            "Анюта:\n" +
-                            "Школа - 15:05\n" +
-                            "Англійська 17:00-18:00\n" +
+                            anna +
+                            schoolEightLessons +
+                            eng + "17:00-18:00\n" +
                             delim;
                     break;
             case THURSDAY:
                     dayPlanes =
-                            "Плани на Четвер:\n" +
+                            "<i>Плани на Четвер:</i>\n" +
                             delim +
-                            "Макс:\n" +
-                            "Школа - 15:05\n" +
-                            "Басейн - 18:00-19:30\n" +
+                            max +
+                            schoolSevenLessons +
+                            eng + "16:00-17:00\n" +
+                            pool +
                             delim +
-                            "Анюта:\n" +
-                            "Школа - 14:10\n" +
-                            "Танці(Кон) - 18:00-19:30\n" +
+                            anna +
+                            schoolEightLessons +
+                            dances + "17:30-19:00\n(Коновальця)\n" +
                             delim;
                 break;
             case FRIDAY:
                     dayPlanes =
-                            "Плани на П'ятницю:\n" +
+                            "<i>Плани на П'ятницю:</i>\n" +
                             delim +
-                            "Макс\n" +
-                            "Школа - 13:15\n" +
-                            "Німецька - 15:00-16:00\n" +
-                            "Басейн - 18:00-19:30\n" +
+                            max +
+                            schoolSevenLessons +
+                            pool +
                             delim +
-                            "Анюта:\n" +
-                            "Школа - 15:05\n" +
-                            "Танці(Текст) - 18:00-19:00\n" +
+                            anna +
+                            schoolSevenLessons +
+                            dances + "19:00-20:30\n(Текстильник)\n" +
                             delim;
                 break;
             case SATURDAY:
                     dayPlanes =
-                            "Плани на Суботу:\n" +
+                            "<i>Плани на Суботу:</i>\n" +
                             delim +
-                            "Макс:\n" +
-                            "Англійська - 10:30-11:30\n" +
+                            max +
+                            "\uD83C\uDFCA\u200D♂️ Басейн - 11:00-12:45\n" +
                             delim +
-                            "Анюта:\n" +
-                            "Німецька - 11:00-12:00\n" +
+                            anna +
+                            eng + "11:45-12:45\n" +
+                            germ + "12:00-13:00\n" +
                             delim;
                 break;
             case SUNDAY:
                     dayPlanes =
-                            "НЕДІЛЯ!\n" +
-                            "ВИХІДНИЙ!\n";
+                            "<b>НЕДІЛЯ!\nВИХІДНИЙ!</b>\n";
                     break;
         }
         return dayPlanes;
