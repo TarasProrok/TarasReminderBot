@@ -172,28 +172,28 @@ public class MyBot extends TelegramLongPollingBot {
             case MONDAY:
                     dayPlanes =
                             "<i>Плани на Понеділок:</i>\n" +
-                                    delim +
-                                    max +
-                                    schoolSevenLessons +
-                                    pool +
-                                    delim +
-                                    anna +
-                                    schoolSevenLessons +
-                                    delim;
+                            delim +
+                            max +
+                            schoolSevenLessons +
+                            pool +
+                            delim +
+                            anna +
+                            schoolSevenLessons +
+                            delim;
                 break;
             case TUESDAY:
                     dayPlanes =
                             "<i>Плани на Вівторок:</i>\n" +
-                                    delim +
-                                    max +
-                                    schoolSevenLessons +
-                                    eng + "16:00-17:00\n" +
-                                    pool +
-                                    delim +
-                                    anna +
-                                    schoolSevenLessons +
-                                    dances + "19:00-20:30\n(Текстильник)\n" +
-                                    delim;
+                            delim +
+                            max +
+                            schoolSevenLessons +
+                            eng + "16:00-17:00\n" +
+                            pool +
+                            delim +
+                            anna +
+                            schoolSevenLessons +
+                            dances + "19:00-20:30\n(Текстильник)\n" +
+                            delim;
                     break;
             case WEDNESDAY:
                     dayPlanes =
@@ -244,7 +244,7 @@ public class MyBot extends TelegramLongPollingBot {
                             "\uD83C\uDFCA\u200D♂️ Басейн - 11:00-12:45\n" +
                             delim +
                             anna +
-                            eng + "11:45-12:45\n" +
+                            eng + "10:45-11:45\n" +
                             germ + "12:00-13:00\n" +
                             delim;
                 break;
