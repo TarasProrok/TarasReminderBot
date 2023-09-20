@@ -1,6 +1,7 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+@Slf4j
 public class Weather {
     private static final String OPEN_WEATHER_MAP_API_KEY = "2e87361fc4aa00e17b64a24b7ae7cca6";
     private static final String OPEN_WEATHER_MAP_API_URL =
@@ -26,7 +28,7 @@ public class Weather {
             url = new URL(String.format(OPEN_WEATHER_MAP_API_URL, "Rivne", OPEN_WEATHER_MAP_API_KEY));
             forecastUrl = new URL(String.format(OPEN_FORECAST_MAP_API_URL, "Rivne", OPEN_WEATHER_MAP_API_KEY));
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            System.out.println("e = " + e);
         }
     }
 
@@ -63,7 +65,7 @@ public class Weather {
                     description, temp, tempFeelsLike, windSpeed, humidity);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("e = " + e);
             return "не вдалося отримати прогноз погоди";
         }
     }
@@ -96,7 +98,7 @@ public class Weather {
 
             return maxTemperature;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error");
             return 0;
         }
     }

@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BotData {
+
     private static final String USERS_FILE = "users.json";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public BotData() {
+    }
 
     static List<String> getChatIds() {
         List<String> chatIds = new ArrayList<>();
@@ -22,7 +26,7 @@ public class BotData {
                 br.close();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Gettin chatIds error: " + e);
         }
         return chatIds;
     }
@@ -35,7 +39,7 @@ public class BotData {
                 writer.write(chatId + "\n");
                 writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Saving chatId error: " + e);
             }
         }
     }

@@ -9,7 +9,11 @@ import java.util.List;
 
 public class CurrencyParser {
 
+    CurrencyParser() {
+    }
+
     public static List<String> getExchangeRates() throws IOException {
+
         List<String> exchangeRates;
             exchangeRates = new ArrayList<>();
 
@@ -40,7 +44,6 @@ public class CurrencyParser {
         String rates = "<b>Курси валют на сьогодні:</b>";
         String usd = "💵"+ratesList.get(0);
         String eur = "\uD83D\uDCB6"+ratesList.get(1);
-        String output = String.format("%s\n%s\n%s",rates, usd, eur);
-        return output;
+        return String.format("%s\n%s\n%s",rates, usd, eur);
     }
 }
