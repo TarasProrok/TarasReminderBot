@@ -2,6 +2,10 @@ import java.time.DayOfWeek;
 
 public class DayTranslator {
 
+    private DayTranslator() {
+    }
+
+
     public static String getUkrDay(DayOfWeek dayOfWeek) {
 
         String ukrDay = "";
