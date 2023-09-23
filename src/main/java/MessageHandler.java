@@ -21,7 +21,10 @@ public class MessageHandler extends SchedulerBot {
         switch (messageText) {
             case "/start":
                 System.out.println("Received command START!");
-                message.setText("Вітаннячко!\nЦей ботик щодня о 10 присилатиме\nплани дітей на день!");
+                message.setText("Вітаннячко!\n" +
+                        "Цей ботик щодня о 10:00 присилатиме\n" +
+                        "плани дітей на поточний день\n" +
+                        "і о 20:00 на завтра!");
                 break;
             case "/today":
                 System.out.println("Received command TODAY! Sending plans for today!");
@@ -70,6 +73,7 @@ public class MessageHandler extends SchedulerBot {
                     + iLoveYou);
             try {
                 execute(message);
+                System.out.println("Message to Vika sent successfully.");
             } catch (TelegramApiException e) {
                 System.out.println("Vika`s daily message error: " + e);
             }
@@ -82,8 +86,9 @@ public class MessageHandler extends SchedulerBot {
                     + CurrencyParser.prettyRates());
             try {
                 execute(message);
+                System.out.println("\nMessage to ID: " + chatId + " sent successfully");
             } catch (TelegramApiException e) {
-                System.out.println("Daily message error: " + e);
+                System.out.println("Sending daily message error!\nID: " + chatId + " Error: " + e);
             }
         }
     }
@@ -98,8 +103,9 @@ public class MessageHandler extends SchedulerBot {
             message.setText(DayPlanes.getDayPlanes(nextDay));
             try {
                 execute(message);
+                System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
             } catch (TelegramApiException e) {
-                System.out.println("Next day message error: " + e);
+                System.out.println("Sending next day message error!\nID: " + chatId + " Error: " + e);
             }
         }
     }

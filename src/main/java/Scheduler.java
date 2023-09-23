@@ -11,8 +11,11 @@ public class Scheduler {
     private Scheduler() {
     }
 
-    private static final LocalTime notificationTime = LocalTime.of(9, 45); // задаємо час розсилки повідомлення
-    private static final LocalTime notificationTomorrow = LocalTime.of(20, 30); // задаємо час розсилки повідомлення
+    // задаємо час розсилки повідомлення
+    private static final LocalTime notificationTime = LocalTime.of(10, 0);
+
+    // задаємо час розсилки повідомлення про плани на завтра
+    private static final LocalTime notificationTomorrow = LocalTime.of(20, 0);
 
     public static void setTimer() {
         int initialHour = LocalDateTime.now().getHour();
@@ -50,7 +53,7 @@ public class Scheduler {
         List<String> chatIds = BotData.getChatIds();
 
         if (currentHour == notificationHour && currentMinute == notificationMinute) {
-            System.out.println("It is " + LocalDateTime.now() + "! Time to send messages!");
+            System.out.println("It is " + LocalDateTime.now() + "! Sending plans for today...");
             chatIds.forEach(chatId -> {
                 try {
                     messageHandler.sendDailyMessage(chatId);

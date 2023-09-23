@@ -44,7 +44,7 @@ dependencies {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 tasks.jar {
-    manifest.attributes["Main-Class"] = 'MyBot'
+    manifest.attributes["Main-Class"] = 'AppLauncher'
 }
 
 shadowJar {

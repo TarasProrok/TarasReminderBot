@@ -29,7 +29,7 @@ public class DayPlanes {
         if (dayOfWeek.equals(DayOfWeek.from(LocalDateTime.now()))) {
             dayTitle = "<i>Плани на " + getDay(dayOfWeek) + ":</i>\n";
         } else {
-            dayTitle = "<i>Нагадую плани на завтра, " + getDay(dayOfWeek) + ":</i>\n";
+            dayTitle = "<i>Нагадую\nплани на завтра, " + getDay(dayOfWeek) + ":</i>\n";
         }
         switch (dayOfWeek) {
             case MONDAY:
