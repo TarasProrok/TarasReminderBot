@@ -53,7 +53,7 @@ public class Scheduler {
         List<String> chatIds = BotData.getChatIds();
 
         if (currentHour == notificationHour && currentMinute == notificationMinute) {
-            System.out.println("It is " + LocalDateTime.now() + "! Sending plans for today...");
+            System.out.println("It is " + LocalDateTime.now().withNano(0) + "! Sending plans for today...");
             chatIds.forEach(chatId -> {
                 try {
                     messageHandler.sendDailyMessage(chatId);
@@ -62,10 +62,10 @@ public class Scheduler {
                 }
             });
         } else if (currentHour == tomorrowNotificationHour && currentMinute == tomorrowNotificationMinute) {
-            System.out.println("It is " + LocalDateTime.now() + "! Sending plans for tomorrow...");
+            System.out.println("It is " + LocalDateTime.now().withNano(0) + "! Sending plans for tomorrow...");
             chatIds.forEach(messageHandler::sendMessageForTomorrow);
         } else {
-            System.out.println("It is " + LocalDateTime.now() + " ..nothing happening. Tic tac.. ");
+            System.out.println("It is " + LocalDateTime.now().withNano(0) + " ..not now. Tic tac.. ");
         }
     }
 }

@@ -20,23 +20,23 @@ public class MessageHandler extends SchedulerBot {
 
         switch (messageText) {
             case "/start":
-                System.out.println("Received command START!");
+                System.out.println("Received command START from ID: " + chatId);
                 message.setText("Вітаннячко!\n" +
                         "Цей ботик щодня о 10:00 присилатиме\n" +
                         "плани дітей на поточний день\n" +
                         "і о 20:00 на завтра!");
                 break;
             case "/today":
-                System.out.println("Received command TODAY! Sending plans for today!");
+                System.out.println("Received command TODAY from ID: " + chatId + "\nSending plans for today!");
                 message.setText(DayPlanes.getDayPlanes(LocalDateTime.now().getDayOfWeek()));
                 break;
             case "/weather":
-                System.out.println("Received command WEATHER! Sending weather forecast for today!");
+                System.out.println("Received command WEATHER from ID: " + chatId + "\nSending weather forecast for today!");
                 message.setText(Weather.getWeather());
                 break;
             case "/currency":
                 try {
-                    System.out.println("Received command CURRENCY! Sending currency rates!");
+                    System.out.println("Received command CURRENCY from ID: " + chatId + "\nSending currency rates!");
                     message.setText(CurrencyParser.prettyRates());
                 } catch (IOException e) {
                     message.setText("Не вдалося отримати круси валют");
@@ -44,7 +44,7 @@ public class MessageHandler extends SchedulerBot {
                 }
                 break;
             case "/full":
-                System.out.println("Received command FULL! Sending week schedule!");
+                System.out.println("Received command FULL from ID: " + chatId + "\nSending week schedule!");
                 message.setText(
                         DayPlanes.getWeekPlans());
                 break;
@@ -52,13 +52,13 @@ public class MessageHandler extends SchedulerBot {
         try {
             execute(message);
         } catch (Exception e) {
-            System.out.println("Executing response message error: " + e);
+            System.out.println("Executing response message error. ID: " + chatId + "Error: " + e);
         }
     }
 
     public void sendDailyMessage(String chatId) throws IOException {
         DayOfWeek dayOfWeek = DayOfWeek.from(LocalDateTime.now());
-        String iLoveYou = "\nПуська, я тебе люблю! \uD83E\uDEF6";
+        String iLoveYouString = "\nПуська, я тебе люблю! \uD83E\uDEF6";
         String greetingDay = "Вітаю! \uD83E\uDEF6 \n";
 
         SendMessage message = new SendMessage();
@@ -70,7 +70,7 @@ public class MessageHandler extends SchedulerBot {
                     + DayPlanes.getDayPlanes(dayOfWeek)
                     + Weather.getWeather()
                     + CurrencyParser.prettyRates()
-                    + iLoveYou);
+                    + iLoveYouString);
             try {
                 execute(message);
                 System.out.println("Message to Vika sent successfully.");
@@ -88,7 +88,7 @@ public class MessageHandler extends SchedulerBot {
                 execute(message);
                 System.out.println("\nMessage to ID: " + chatId + " sent successfully");
             } catch (TelegramApiException e) {
-                System.out.println("Sending daily message error!\nID: " + chatId + " Error: " + e);
+                System.out.println("Error sending daily message to ID: " + chatId + "\nError: " + e);
             }
         }
     }
@@ -105,7 +105,7 @@ public class MessageHandler extends SchedulerBot {
                 execute(message);
                 System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
             } catch (TelegramApiException e) {
-                System.out.println("Sending next day message error!\nID: " + chatId + " Error: " + e);
+                System.out.println("Error sending next day message to ID: " + chatId + "\nError: " + e);
             }
         }
     }
