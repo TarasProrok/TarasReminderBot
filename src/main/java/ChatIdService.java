@@ -2,15 +2,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BotData {
+public class ChatIdService {
 
     private static final String USERS_FILE = "users.json";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public BotData() {
+    public ChatIdService() {
     }
 
     static List<String> getChatIds() {
@@ -42,5 +43,19 @@ public class BotData {
                 System.out.println("Saving chatId error: " + e);
             }
         }
+    }
+
+    public static void deleteChatId(String chatId) throws IOException {
+        File inFile = new File(USERS_FILE);
+        File tempFile = new File("temp.json");
+        PrintWriter out = new PrintWriter(new FileWriter(tempFile));
+
+        Files.lines(inFile.toPath())
+                .filter(line -> !line.contains(chatId))
+                .forEach(out::println);
+        out.flush();
+        out.close();
+        tempFile.renameTo(new File(USERS_FILE));
+        System.out.println("ID: " + chatId + " deleted successfully");
     }
 }

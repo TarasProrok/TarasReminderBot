@@ -48,6 +48,10 @@ public class MessageHandler extends SchedulerBot {
                 message.setText(
                         DayPlanes.getWeekPlans());
                 break;
+            case "/userlist":
+                System.out.println("Received command USERLIST from ID: " + chatId + "\nSending users list!");
+                message.setText(ChatIdService.getChatIds().toString());
+                break;
         }
         try {
             execute(message);
@@ -56,7 +60,7 @@ public class MessageHandler extends SchedulerBot {
         }
     }
 
-    public void sendDailyMessage(String chatId) throws IOException {
+    public void sendMessageForToday(String chatId) throws IOException {
         DayOfWeek dayOfWeek = DayOfWeek.from(LocalDateTime.now());
         String iLoveYouString = "\nПуська, я тебе люблю! \uD83E\uDEF6";
         String greetingDay = "Вітаю! \uD83E\uDEF6 \n";
@@ -106,6 +110,11 @@ public class MessageHandler extends SchedulerBot {
                 System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
             } catch (TelegramApiException e) {
                 System.out.println("Error sending next day message to ID: " + chatId + "\nError: " + e);
+                try {
+                    ChatIdService.deleteChatId(chatId);
+                } catch (IOException ex) {
+                    System.out.println("Error deleting chatId " + chatId + ".\nError: " + ex);
+                }
             }
         }
     }
