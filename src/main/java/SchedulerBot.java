@@ -16,8 +16,11 @@ public class SchedulerBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        ChatIdService service = new ChatIdService();
         if (update.hasMessage() && update.getMessage().hasText()) {
-            ChatIdService.saveChatId(update.getMessage().getChatId().toString());
+            String chatId = update.getMessage().getChatId().toString();
+            service.saveChatId(chatId);
+            service.newUserNotificationMessage(chatId);
             MessageHandler messageHandler = new MessageHandler();
             messageHandler.responseMessage(update);
         }

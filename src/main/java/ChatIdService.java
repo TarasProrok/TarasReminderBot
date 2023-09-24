@@ -1,11 +1,12 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatIdService {
+public class ChatIdService extends MessageHandler {
 
     private static final String USERS_FILE = "users.json";
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();

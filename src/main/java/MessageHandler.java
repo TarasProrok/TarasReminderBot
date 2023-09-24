@@ -20,7 +20,7 @@ public class MessageHandler extends SchedulerBot {
 
         switch (messageText) {
             case "/start":
-                System.out.println("Received command START from ID: " + chatId +"\nSending greetings message!");
+                System.out.println("Received command START from ID: " + chatId + "\nSending greetings message!");
                 message.setText("Вітаннячко!\n" +
                         "Цей ботик щодня о 10:00 присилатиме\n" +
                         "плани дітей на поточний день\n" +
@@ -97,19 +97,30 @@ public class MessageHandler extends SchedulerBot {
         }
     }
 
-    public void sendMessageForTomorrow (String chatId) {
+    public void sendMessageForTomorrow(String chatId) {
         DayOfWeek nextDay = DayOfWeek.from(LocalDateTime.now().plusDays(1L));
 
         SendMessage message = new SendMessage();
 
-            message.setChatId(chatId);
-            message.setParseMode(HTML);
-            message.setText(DayPlanes.getDayPlanes(nextDay));
-            try {
-                execute(message);
-                System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
-            } catch (TelegramApiException e) {
-                System.out.println("Error sending next day message to ID: " + chatId + "\nError: " + e);
-            }
+        message.setChatId(chatId);
+        message.setParseMode(HTML);
+        message.setText(DayPlanes.getDayPlanes(nextDay));
+        try {
+            execute(message);
+            System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
+        } catch (TelegramApiException e) {
+            System.out.println("Error sending next day message to ID: " + chatId + "\nError: " + e);
         }
     }
+
+    public void newUserNotificationMessage(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(1073000130L);
+        message.setText("Додався новий користувач з ID: " + chatId);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            System.out.println("Notification message error: " + e);
+        }
+    }
+}
