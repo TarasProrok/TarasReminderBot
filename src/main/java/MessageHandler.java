@@ -20,7 +20,7 @@ public class MessageHandler extends SchedulerBot {
 
         switch (messageText) {
             case "/start":
-                System.out.println("Received command START from ID: " + chatId);
+                System.out.println("Received command START from ID: " + chatId +"\nSending greetings message!");
                 message.setText("Вітаннячко!\n" +
                         "Цей ботик щодня о 10:00 присилатиме\n" +
                         "плани дітей на поточний день\n" +
@@ -110,11 +110,6 @@ public class MessageHandler extends SchedulerBot {
                 System.out.println("\nMessage to ID: " + chatId + " sent successfully.");
             } catch (TelegramApiException e) {
                 System.out.println("Error sending next day message to ID: " + chatId + "\nError: " + e);
-                try {
-                    ChatIdService.deleteChatId(chatId);
-                } catch (IOException ex) {
-                    System.out.println("Error deleting chatId " + chatId + ".\nError: " + ex);
-                }
             }
         }
     }

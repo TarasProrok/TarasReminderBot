@@ -22,7 +22,7 @@ public class Scheduler {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, initialHour);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 1);
+        calendar.set(Calendar.SECOND, 0);
 
         TimerTask timerTaskSendNotification = new TimerTask() {
             @Override
@@ -50,22 +50,22 @@ public class Scheduler {
         int tomorrowNotificationHour = notificationTomorrow.getHour();
         int tomorrowNotificationMinute = notificationTomorrow.getMinute();
 
-        List<String> chatIds = BotData.getChatIds();
+        List<String> chatIds = ChatIdService.getChatIds();
 
         if (currentHour == notificationHour && currentMinute == notificationMinute) {
-            System.out.println("It is " + LocalDateTime.now().withNano(0) + "! Sending plans for today...");
+            System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for today...");
             chatIds.forEach(chatId -> {
                 try {
-                    messageHandler.sendDailyMessage(chatId);
+                    messageHandler.sendMessageForToday(chatId);
                 } catch (IOException e) {
                     System.out.println("sendUsersNotifications Error: " + e);
                 }
             });
         } else if (currentHour == tomorrowNotificationHour && currentMinute == tomorrowNotificationMinute) {
-            System.out.println("It is " + LocalDateTime.now().withNano(0) + "! Sending plans for tomorrow...");
+            System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for tomorrow...");
             chatIds.forEach(messageHandler::sendMessageForTomorrow);
         } else {
-            System.out.println("It is " + LocalDateTime.now().withNano(0) + " ..not now. Tic tac.. ");
+            System.out.println(LocalDateTime.now().withNano(0) + " ..not now. Tic tac.. ");
         }
     }
 }
