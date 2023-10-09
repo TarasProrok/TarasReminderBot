@@ -95,7 +95,7 @@ public class DayPlanes {
                                 pool +
                                 delim +
                                 anna +
-                                schoolSevenLessons +
+                                schoolSixLessons +
                                 dances + "19:00-20:30\n(Текстильник)\n" +
                                 delim;
                 break;
@@ -122,74 +122,5 @@ public class DayPlanes {
                 dayPlanes = "Ой-ой!\nСталася помилка!\nВиправлю як найшвидше!";
         }
         return dayPlanes;
-    }
-
-    public static String getWeekPlans() {
-        return
-                        "Понеділок:\n" +
-                        delim +
-                        max +
-                        schoolSevenLessons +
-                        pool +
-                        delim +
-                        anna +
-                        schoolSevenLessons +
-                        delim +
-                        "Вівторок:\n" +
-                        delim +
-                        max +
-                        schoolSevenLessons +
-                        eng + "16:00-17:00\n" +
-                        pool +
-                        delim +
-                        anna +
-                        schoolSevenLessons +
-                        dances + "19:00-20:30\n(Текстильник)\n" +
-                        delim +
-                        "Середа:\n" +
-                        delim +
-                        max +
-                        schoolSixLessons +
-                        germ + "15:00-16:00\n" +
-                        pool +
-                        delim +
-                        anna +
-                        schoolEightLessons +
-                        eng + "17:00-18:00\n" +
-                        delim +
-                        "Четвер:\n" +
-                        delim +
-                        max +
-                        schoolSevenLessons +
-                        eng + "16:00-17:00\n" +
-                        pool +
-                        delim +
-                        anna +
-                        schoolEightLessons +
-                        dances + "17:30-19:00\n(Коновальця)\n" +
-                        delim +
-                        "П'ятниця:\n" +
-                        delim +
-                        max +
-                        schoolSevenLessons +
-                        pool +
-                        delim +
-                        anna +
-                        schoolSevenLessons +
-                        dances + "19:00-20:30\n(Текстильник)\n" +
-                        delim +
-                        "Субота:\n" +
-                        delim +
-                        max +
-                        "\uD83C\uDFCA\u200D♂️ Басейн - 11:00-12:45\n" +
-                        delim +
-                        anna +
-                        eng + "10:45-11:45\n" +
-                        germ + "12:00-13:00\n" +
-                        delim +
-                        "Неділя:\n" +
-                        delim +
-                        "<b>НЕДІЛЯ!\nВИХІДНИЙ!</b>\n" +
-                        delim;
     }
 }

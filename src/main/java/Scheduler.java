@@ -12,7 +12,7 @@ public class Scheduler {
     }
 
     // задаємо час розсилки повідомлення
-    private static final LocalTime notificationTime = LocalTime.of(10, 0);
+    private static final LocalTime notificationTime = LocalTime.of(9, 45);
 
     // задаємо час розсилки повідомлення про плани на завтра
     private static final LocalTime notificationTomorrow = LocalTime.of(20, 0);
@@ -35,9 +35,8 @@ public class Scheduler {
         timer.schedule(
                 timerTaskSendNotification,
                 calendar.getTime(),
-                60000 // wait one minute and check
+                60000 // чекаємо хвилину
         );
-
     }
 
     public static void sendUsersNotifications() {
@@ -55,17 +54,18 @@ public class Scheduler {
         if (currentHour == notificationHour && currentMinute == notificationMinute) {
             System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for today...");
             chatIds.forEach(chatId -> {
-                try {
-                    messageHandler.sendMessageForToday(chatId);
-                } catch (IOException e) {
-                    System.out.println("sendUsersNotifications Error: " + e);
-                }
+                    try {
+                        messageHandler.sendMessageForToday(chatId);
+                    } catch (IOException e) {
+                        System.out.println("sendUsersNotifications Error: " + e);
+                    }
             });
         } else if (currentHour == tomorrowNotificationHour && currentMinute == tomorrowNotificationMinute) {
             System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for tomorrow...");
             chatIds.forEach(messageHandler::sendMessageForTomorrow);
         } else {
-            System.out.println(LocalDateTime.now().withNano(0) + " ..not now. Tic tac.. ");
+                System.out.println(LocalDateTime.now().withNano(0) + " || .. just waiting..");
+
+            }
         }
     }
-}

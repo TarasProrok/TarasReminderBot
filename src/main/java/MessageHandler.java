@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.telegram.telegrambots.meta.api.methods.ParseMode.HTML;
 
@@ -22,13 +23,21 @@ public class MessageHandler extends SchedulerBot {
             case "/start":
                 System.out.println("Received command START from ID: " + chatId + "\nSending greetings message!");
                 message.setText("Вітаннячко!\n" +
-                        "Цей ботик щодня о 10:00 присилатиме\n" +
+                        "Цей ботик щодня о 9:45 присилатиме\n" +
                         "плани дітей на поточний день\n" +
                         "і о 20:00 на завтра!");
                 break;
             case "/today":
-                System.out.println("Received command TODAY from ID: " + chatId + "\nSending plans for today!");
-                message.setText(DayPlanes.getDayPlanes(LocalDateTime.now().getDayOfWeek()));
+                try {
+                    System.out.println("Received command TODAY from ID: " + chatId + "\nSending plans for today!");
+                    message.setParseMode(HTML);
+                    message.setText(DayPlanes.getDayPlanes(DayOfWeek.from(LocalDateTime.now()))
+                            + Weather.getWeather()
+                            + CurrencyParser.prettyRates());
+                } catch (IOException e) {
+                    message.setText("Не вдалося отримати круси валют");
+                    System.out.println("Currency response error: " + e);
+                }
                 break;
             case "/weather":
                 System.out.println("Received command WEATHER from ID: " + chatId + "\nSending weather forecast for today!");
@@ -42,11 +51,6 @@ public class MessageHandler extends SchedulerBot {
                     message.setText("Не вдалося отримати круси валют");
                     System.out.println("Currency response error: " + e);
                 }
-                break;
-            case "/full":
-                System.out.println("Received command FULL from ID: " + chatId + "\nSending week schedule!");
-                message.setText(
-                        DayPlanes.getWeekPlans());
                 break;
             case "/userlist":
                 System.out.println("Received command USERLIST from ID: " + chatId + "\nSending users list!");
@@ -121,6 +125,19 @@ public class MessageHandler extends SchedulerBot {
             execute(message);
         } catch (TelegramApiException e) {
             System.out.println("Notification message error: " + e);
+        }
+    }
+    public void newUserAccessDeniedMessage(String chatId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("⚠️ User ID: " + chatId + "!\nThis is private bot and You are not authorised user! " +
+                "You will not receive any messages in the future. Please leave. Thank you." +
+                "\n\n⚠️ Користувач з ID: " + chatId + "!\nЦе приватний бот і Ви не є авторизованим користувачем! " +
+                "Ви не будете отримувати повідомлень в майбутньому. Будь ласка, видаліть цей бот. Дякую.");
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            System.out.println("Access denied message error: " + e);
         }
     }
 }
