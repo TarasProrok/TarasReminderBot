@@ -1,3 +1,5 @@
+package Services;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -7,9 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CurrencyParser {
+public class CurrencyParserService {
 
-    CurrencyParser() {
+    CurrencyParserService() {
     }
 
     public static List<String> getExchangeRates() throws IOException {

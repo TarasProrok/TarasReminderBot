@@ -1,7 +1,9 @@
+package Services;
+
+import LogService.LogService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,8 +14,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
-@Slf4j
-public class Weather {
+public class WeatherRetrieveService {
+    private WeatherRetrieveService() {
+    }
+
     private static final String OPEN_WEATHER_MAP_API_KEY = "2e87361fc4aa00e17b64a24b7ae7cca6";
     private static final String OPEN_WEATHER_MAP_API_URL =
             "http://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric";
@@ -28,12 +32,12 @@ public class Weather {
             url = new URL(String.format(OPEN_WEATHER_MAP_API_URL, "Rivne", OPEN_WEATHER_MAP_API_KEY));
             forecastUrl = new URL(String.format(OPEN_FORECAST_MAP_API_URL, "Rivne", OPEN_WEATHER_MAP_API_KEY));
         } catch (MalformedURLException e) {
-            System.out.println("e = " + e);
+            LogService.addEvent("Connecting to weather service error: " + e);
         }
     }
 
 
-    static String getWeather() {
+    public static String getWeather() {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -65,7 +69,7 @@ public class Weather {
                     description, temp, tempFeelsLike, windSpeed, humidity);
 
         } catch (Exception e) {
-            System.out.println("e = " + e);
+            LogService.addEvent("Connecting to weather service error: " + e);
             return "не вдалося отримати прогноз погоди";
         }
     }
@@ -98,8 +102,8 @@ public class Weather {
 
             return maxTemperature;
         } catch (Exception e) {
-            System.out.println("Error");
-            return 0;
+            LogService.addEvent("Getting Max daily temperature error: " + e);
+            return 100;
         }
     }
     private static int getDailyMaxWeatherCondition() throws IOException {

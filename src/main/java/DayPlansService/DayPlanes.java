@@ -1,3 +1,5 @@
+package DayPlansService;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 
@@ -9,7 +11,6 @@ public class DayPlanes {
     public static String getDay(DayOfWeek dayOfWeek) {
         return DayTranslator.getUkrDay(dayOfWeek);
     }
-
 
     static String delim = "----------------------\n";
     static String max = "\uD83D\uDC66\uD83C\uDFFC <b>Макс:</b>\n";

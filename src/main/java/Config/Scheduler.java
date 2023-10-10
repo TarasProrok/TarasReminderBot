@@ -1,3 +1,9 @@
+package Config;
+
+import LogService.LogService;
+import MessageHandler.MessageHandler;
+import Services.UserService;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -49,23 +55,18 @@ public class Scheduler {
         int tomorrowNotificationHour = notificationTomorrow.getHour();
         int tomorrowNotificationMinute = notificationTomorrow.getMinute();
 
-        List<String> chatIds = ChatIdService.getChatIds();
+        List<String> chatIds = UserService.getAuthUsers();
 
         if (currentHour == notificationHour && currentMinute == notificationMinute) {
-            System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for today...");
             chatIds.forEach(chatId -> {
                     try {
                         messageHandler.sendMessageForToday(chatId);
                     } catch (IOException e) {
-                        System.out.println("sendUsersNotifications Error: " + e);
+                        LogService.addEvent("sendUsersNotifications Error: " + e);
                     }
             });
         } else if (currentHour == tomorrowNotificationHour && currentMinute == tomorrowNotificationMinute) {
-            System.out.println(LocalDateTime.now().withNano(0) + " Sending plans for tomorrow...");
             chatIds.forEach(messageHandler::sendMessageForTomorrow);
-        } else {
-                System.out.println(LocalDateTime.now().withNano(0) + " || .. just waiting..");
-
             }
         }
     }
