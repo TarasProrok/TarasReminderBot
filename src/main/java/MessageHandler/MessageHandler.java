@@ -25,13 +25,19 @@ public class MessageHandler extends SchedulerBotResponseHandlers {
         message.setParseMode(HTML);
         message.setChatId(chatId);
 
-        switch (messageText) {
+        String[] commandTwoSplit = messageText.split(" ", 2);
+        String userId = commandTwoSplit[1].trim();
+        String command = commandTwoSplit[0].trim();
+
+        switch (command) {
             case "/start":
                 LogService.addEvent("Received command START from ID: " + chatId);
                 message.setText("So\n" +
                         "Scheduled time: 9:45 and 20:00\n" +
                         "Commands:\n" +
                         "today - plans for today\n" +
+                        "getlog - see log" +
+                        "2auth + id - add auth user" +
                         "users - authorised users\n" +
                         "all - all users");
                 break;
@@ -47,9 +53,17 @@ public class MessageHandler extends SchedulerBotResponseHandlers {
                     LogService.addEvent("Currency response error: " + e);
                 }
                 break;
+            case "/getlog":
+                LogService.addEvent("Received command " + messageText + " from ID: " + chatId);
+                message.setText(LogService.getLog().toString());
+                break;
             case "/users":
                 LogService.addEvent("Received command " + messageText + " from ID: " + chatId);
                 message.setText(UserService.getAuthUsers().toString());
+                break;
+            case "2auth":
+                UserService.addAuthUser(userId);
+                LogService.addEvent("Received command " + messageText + " from ID: " + chatId);
                 break;
             case "/all":
                 LogService.addEvent("Received command " + messageText + " from ID: " + chatId);

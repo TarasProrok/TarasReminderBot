@@ -61,4 +61,17 @@ public class UserService {
         }
         return allUsers;
     }
+
+    public static void addAuthUser(String chatId) {
+        List<String> chatIds = getAuthUsers();
+        if (!chatIds.contains(chatId)) {
+            try {
+                FileWriter writer = new FileWriter(AUTH_USERS_FILE, true);
+                writer.write(chatId + "\n");
+                writer.close();
+            } catch (IOException e) {
+                LogService.addEvent("Adding new authorised user error: " + e);
+            }
+        }
+    }
 }
