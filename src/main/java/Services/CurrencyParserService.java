@@ -23,7 +23,7 @@ public class CurrencyParserService {
             Document doc = Jsoup.connect("http://rulya-bank.com.ua/").get();
 
             // знаходимо таблицю з курсами валют
-            Element table = doc.select("div.col-md-3").first();
+            Element table = doc.select("div.col-lg-5").first();
 
             // знаходимо всі рядки таблиці
             if (table != null) {
@@ -33,9 +33,13 @@ public class CurrencyParserService {
                 for (int i = 1; i <= 2; i++) {
                     Element row = rows.get(i);
                     Elements cols = row.select("td");
-                    String currency = cols.get(0).text();
-                    String buyRate = cols.get(1).text();
-                    String sellRate = cols.get(2).text();
+                    String currency = cols.get(1).text();
+                        // вибираємо рядок з доларом, розділяємо на слова
+                    String [] buyRow = cols.get(2).text().split(" ", 2);
+                        // вибираємо рядок з євро, розділяємо на слова
+                    String [] sellRow = cols.get(3).text().split(" ", 2);
+                    String buyRate = buyRow[0]; // вибираємо переший елемент рядка, курс по купівлі
+                    String sellRate = sellRow[0]; // вибираємо переший елемент рядка, курс по продажу
                     exchangeRates.add(currency + ": купівля " + buyRate + ", продаж " + sellRate);
                 }
             }
